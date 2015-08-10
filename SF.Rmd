@@ -1,0 +1,112 @@
+---
+title: "SF"
+output: html_document
+---
+
+
+Primeiro teste, 3.28373
+
+```{r}
+train <- read.csv("~/Projetos/kaggle/San-Francisco-Crime-Classification/train.csv")
+test <- read.csv("~/Projetos/kaggle/San-Francisco-Crime-Classification/test.csv")
+
+library(rpart)
+library(rattle)
+library(RColorBrewer)
+library(rpart.plot)
+
+
+train$Date2 <- as.numeric(unclass(as.POSIXct(train$Dates)))
+test$Date2 <- as.numeric(unclass(as.POSIXct(test$Dates)))
+
+
+tree <- rpart(Category ~ X + Y + Date2 ,
+              data = train,
+              method = "class",
+              control = rpart.control(minsplit = 200,cp=0)
+              )
+
+predicted <- predict(object = tree,newdata = test)
+final <- data.frame(Id = test$Id , predicted)
+colnames(final)  <- c("Id",levels(train$Category))
+
+write.csv(data,file = "my_sub.csv",row.names = FALSE,quote = F)
+
+```
+
+
+Segundo teste, 3.28373
+
+```{r}
+train <- read.csv("~/Projetos/kaggle/San-Francisco-Crime-Classification/train.csv")
+test <- read.csv("~/Projetos/kaggle/San-Francisco-Crime-Classification/test.csv")
+
+library(rpart)
+library(rattle)
+library(RColorBrewer)
+library(rpart.plot)
+
+
+train$Date2 <- as.numeric(unclass(as.POSIXct(train$Dates)))
+test$Date2 <- as.numeric(unclass(as.POSIXct(test$Dates)))
+
+
+tree <- rpart(Category ~ X + Y + Date2 ,
+              data = train,
+              method = "class",
+              control = rpart.control(minsplit = 200,cp=0)
+              )
+
+predicted <- predict(object = tree,newdata = test)
+final <- data.frame(Id = test$Id , predicted)
+colnames(final)  <- c("Id",levels(train$Category))
+
+predicted2 <- predicted
+
+predicted2 <- as.data.frame(predicted2)
+
+predicted2[, "max"] <- apply(predicted2[, 1:39], 1, max)
+
+data <- data.frame(Id = test$Id , predicted2[, "max"] == predicted2[, 1:40])
+
+data[] <- lapply(data, function(x) as.integer(x))
+
+data$Id <- as.integer(data$Id)
+
+data$max <- NULL
+colnames(data)  <- c("Id",levels(train$Category))
+
+write.csv(data,file = "treeCategory.XYDate2.csv",row.names = FALSE,quote = F)
+
+```
+
+You can also embed plots, for example:
+
+```{r}
+tree2 <- rpart(Category ~ .,
+              data = train,
+              method = "class",
+              control = rpart.control(minsplit = 200,cp=0)
+              )
+
+predicted <- predict(object = tree2,newdata = test)
+final <- data.frame(Id = test$Id , predicted)
+colnames(final)  <- c("Id",levels(train$Category))
+
+predicted2 <- predicted
+
+predicted2 <- as.data.frame(predicted2)
+
+predicted2[, "max"] <- apply(predicted2[, 1:39], 1, max)
+
+data <- data.frame(Id = test$Id , predicted2[, "max"] == predicted2[, 1:40])
+
+data[] <- lapply(data, function(x) as.integer(x))
+
+data$Id <- as.integer(data$Id)
+
+data$max <- NULL
+colnames(data)  <- c("Id",levels(train$Category))
+
+write.csv(data,file = "treeCategory.XYDate2.csv",row.names = FALSE,quote = F)
+```
