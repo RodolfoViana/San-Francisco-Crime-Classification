@@ -80,7 +80,7 @@ write.csv(data,file = "treeCategory.XYDate2.csv",row.names = FALSE,quote = F)
 
 ```
 
-You can also embed plots, for example:
+Complete tree:
 
 ```{r}
 tree2 <- rpart(Category ~ .,
@@ -109,4 +109,23 @@ data$max <- NULL
 colnames(data)  <- c("Id",levels(train$Category))
 
 write.csv(data,file = "treeCategory.XYDate2.csv",row.names = FALSE,quote = F)
+```
+
+Random florest.
+
+```{r}
+randomflorest <- read.csv("~/Projetos/Kaggle/randomflorest")
+
+
+final <- data.frame(Id = test$Id , randomflorest[,2:40])
+
+
+#final[, "max"] <- apply(randomflorest[, 2:40], 1, max)
+
+#data <- data.frame(Id = test$Id , final[, "max"] == final[, 2:41])
+
+final[] <- lapply(final, function(x) as.integer(x))
+#data["max"] <- NULL
+colnames(final)  <- c("Id",levels(train$Category))
+write.csv(final,file = "randomflorest3.csv",row.names = FALSE,quote = F)
 ```
