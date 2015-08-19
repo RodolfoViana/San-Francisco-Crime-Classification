@@ -169,6 +169,53 @@ predicition$Id <- test$Id
 write.csv(predicition,file = "treeCategorydatepd.csv",row.names = FALSE,quote = F)
 ```
 
+H20 tree with 50 tree, maxdepth 20
+
+```{r}
+rf5020 <- read.csv("~/Projetos/Kaggle/San-Francisco-Crime-Classification/rf5020")
+
+colnames(rf5020)  <- c("Id",levels(train$Category))
+rf5020$Id <- test$Id
+
+write.csv(rf5020,file = "tree5020.csv",row.names = FALSE,quote = F)
+```
+
+
+H20 tree with 50 tree, maxdepth 20, total 
+
+```{r}
+rf5020total <- read.csv("~/Projetos/Kaggle/San-Francisco-Crime-Classification/rf5020total")
+
+colnames(rf5020total)  <- c("Id",levels(train$Category))
+rf5020total$Id <- test$Id
+
+write.csv(rf5020total,file = "tree5020.csv",row.names = FALSE,quote = F)
+```
+
+
+H20 tree with 50 tree, maxdepth 20, newaddress
+
+```{r}
+rf5020totalnewAddress <- read.csv("~/Projetos/Kaggle/San-Francisco-Crime-Classification/rf-50-20-new")
+
+colnames(rf5020totalnewAddress)  <- c("Id",levels(train$Category))
+rf5020totalnewAddress$Id <- test$Id
+
+write.csv(rf5020totalnewAddress,file = "tree5020totalnewAddress.csv",row.names = FALSE,quote = F)
+```
+
+H20 tree with 50 tree, maxdepth 20, newaddress without addresss
+
+```{r}
+rf5020totalnewAdd <- read.csv("~/Projetos/Kaggle/San-Francisco-Crime-Classification/rf-50-20-newadd")
+
+colnames(rf5020totalnewAdd)  <- c("Id",levels(train$Category))
+rf5020totalnewAdd$Id <- test$Id
+
+write.csv(rf5020totalnewAdd,file = "tree5020totalnewAdd.csv",row.names = FALSE,quote = F)
+```
+
+
 Formatting dates 
 
 ```{r}
