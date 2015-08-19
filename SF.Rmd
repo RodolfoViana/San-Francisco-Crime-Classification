@@ -172,12 +172,16 @@ write.csv(predicition,file = "treeCategorydatepd.csv",row.names = FALSE,quote = 
 Formatting dates 
 
 ```{r}
-
+library(stringi)
 test$newAddress <- str_to_lower(stri_replace_all_fixed(test$Address, " ", ""))
 train$newAddress <- str_to_lower(stri_replace_all_fixed(train$Address, " ", ""))
 
-write.csv(train,file = "train_adress.csv",row.names = FALSE,quote = F)
-write.csv(test,file = "test_adress.csv",row.names = FALSE,quote = F)
+train$Resolution <- NULL
+train$Descript <- NULL
+
+write.csv(train,file = "/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/train_adress.csv",row.names = FALSE,quote = F)
+
+write.csv(test,file = "/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/test_adress.csv",row.names = FALSE,quote = F)
 
 newDates <- train[,1]
 newDates <- as.data.frame(newDates)
@@ -196,5 +200,7 @@ newDates$yday <- newDates$lt$yday
 
 newDates$week <- as.POSIXct(newDates$newDates, format="%U")
 
+train_adress <- read.csv("/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/train_adress.csv")
 
+test_adress <- read.csv("/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/test_adress.csv")
 ```
