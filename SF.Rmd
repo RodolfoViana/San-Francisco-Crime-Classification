@@ -31,7 +31,6 @@ final <- data.frame(Id = test$Id , predicted)
 colnames(final)  <- c("Id",levels(train$Category))
 
 write.csv(data,file = "my_sub.csv",row.names = FALSE,quote = F)
-
 ```
 
 
@@ -128,4 +127,74 @@ final[] <- lapply(final, function(x) as.integer(x))
 #data["max"] <- NULL
 colnames(final)  <- c("Id",levels(train$Category))
 write.csv(final,file = "randomflorest3.csv",row.names = FALSE,quote = F)
+```
+
+
+```{r}
+library(caret)
+library(e1071)
+library("C50")
+library(plyr)
+
+train$Date2 <- as.numeric(unclass(as.POSIXct(train$Dates)))
+test$Date2 <- as.numeric(unclass(as.POSIXct(test$Dates)))
+
+train_labels = train[, 2] ## Classes das instâncias de treino
+train = train[-2] ## Exclui variável alvo
+
+#Transformação para numeric
+treino$PERIODO <- as.numeric(treino$PERIODO)
+treino$DISCIPLINA <- as.numeric(treino$DISCIPLINA)
+treino$DEPARTAMENTO <- as.numeric(treino$DEPARTAMENTO)
+treino$SITUACAO <- as.numeric(treino$SITUACAO)
+treino$MEDIA <- as.numeric(treino$MEDIA)
+
+best_tree_model = train(train[c(7,8,9)], train_labels, method="C5.0", preProcess=c("range"))
+
+predicted <- predict(object = best_tree_model,newdata = test)
+final <- data.frame(Id = test$Id , predicted)
+colnames(final)  <- c("Id",levels(train$Category))
+
+write.csv(data,file = "my_sub.csv",row.names = FALSE,quote = F)
+
+```
+
+
+```{r}
+predicted <- predict(object = tree,newdata = test)
+final <- data.frame(Id = test$Id , predicted)
+colnames(predicition)  <- c("Id",levels(train$Category))
+
+predicition$Id <- test$Id
+write.csv(predicition,file = "treeCategorydatepd.csv",row.names = FALSE,quote = F)
+```
+
+Formatting dates 
+
+```{r}
+
+test$newAddress <- str_to_lower(stri_replace_all_fixed(test$Address, " ", ""))
+train$newAddress <- str_to_lower(stri_replace_all_fixed(train$Address, " ", ""))
+
+write.csv(train,file = "train_adress.csv",row.names = FALSE,quote = F)
+write.csv(test,file = "test_adress.csv",row.names = FALSE,quote = F)
+
+newDates <- train[,1]
+newDates <- as.data.frame(newDates)
+?strptime
+newDates$newDates <- as.character(newDates$newDates)
+newDates$d <- as.POSIXct(newDates$newDates, format="%Y-%m-%d %H:%M:%S")
+
+newDates$lt <- as.POSIXlt(newDates$d)    # convert to 'POSIX list type'
+newDates$monthDay <- newDates$lt$mday
+newDates$hour <- newDates$lt$hour
+newDates$min <- newDates$lt$min
+newDates$mon <- newDates$lt$mon
+newDates$year <- newDates$lt$year
+newDates$wday <- newDates$lt$wday
+newDates$yday <- newDates$lt$yday
+
+newDates$week <- as.POSIXct(newDates$newDates, format="%U")
+
+
 ```
