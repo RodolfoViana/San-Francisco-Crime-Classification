@@ -13,9 +13,10 @@ output: html_document
 library(h2o)
 print("Launching H2O and initializing connection object...")
 conn <- h2o.init(nthreads = -1)
+#h2o.init(Xmx="10g")
 
 ## Find and import data into H2O
-path_input <- "/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/train_adress.csv"
+path_input <- "/home/viana/train_dates.csv"
 
 print("Importing bike data into H2O...")
 ## Importing the file 
@@ -86,4 +87,30 @@ start <- Sys.time()
 split_fit_predict(data)
 modelBuild <- Sys.time() - start
 print(paste("Took", round(modelBuild, digits = 2), units(modelBuild),"to build a gbm, a random forest, and a glm model, score and report r2 values."))
+
+
+  # Run GLM
+  glm <- h2o.glm(x = myX,
+               y = myY,
+               training_frame    = data.train,
+               validation_frame  = data.test,
+               lambda            = 1e-5,
+               family            = "poisson")
+
+## Find and import data test into H2O
+path_test <- "/home/viana/test_dates.csv"
+data_train <- h2o.importFile(path = path_input, destination_frame = "train.hex")
+
+print("Exporting")
+
+gbm.fit = h2o.predict(object = gbm, newdata = data_train)
+h2o.exportFile(gbm.fit, path = "/home/viana/gbm500-6")
+
+drf.fit = h2o.predict(object = drf, newdata = data_train)
+h2o.exportFile(drf.fit, path = "/home/viana/drf250-30")
+
+glm.fit = h2o.predict(object = glm, newdata = data_train)
+h2o.exportFile(glm.fit, path = "/home/viana/glm1e5")
+
+print("Done")
 ```
