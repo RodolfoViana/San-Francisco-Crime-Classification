@@ -216,10 +216,10 @@ write.csv(rf5020totalnewAdd,file = "tree5020totalnewAdd.csv",row.names = FALSE,q
 ```
 
 
-Formatting dates 
+Formatting address
 
 ```{r}
-library(stringi)
+library(stringr)
 test$newAddress <- str_to_lower(stri_replace_all_fixed(test$Address, " ", ""))
 train$newAddress <- str_to_lower(stri_replace_all_fixed(train$Address, " ", ""))
 
@@ -229,25 +229,128 @@ train$Descript <- NULL
 write.csv(train,file = "/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/train_adress.csv",row.names = FALSE,quote = F)
 
 write.csv(test,file = "/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/test_adress.csv",row.names = FALSE,quote = F)
+```
 
-newDates <- train[,1]
-newDates <- as.data.frame(newDates)
-?strptime
-newDates$newDates <- as.character(newDates$newDates)
-newDates$d <- as.POSIXct(newDates$newDates, format="%Y-%m-%d %H:%M:%S")
 
-newDates$lt <- as.POSIXlt(newDates$d)    # convert to 'POSIX list type'
-newDates$monthDay <- newDates$lt$mday
-newDates$hour <- newDates$lt$hour
-newDates$min <- newDates$lt$min
-newDates$mon <- newDates$lt$mon
-newDates$year <- newDates$lt$year
-newDates$wday <- newDates$lt$wday
-newDates$yday <- newDates$lt$yday
+```{r}
+train_dates <- train[1]
+#?strptime
+train_dates$Dates <- as.character(train_dates$Dates)
+train_dates$Dates <- as.POSIXct(train_dates$Dates, format="%Y-%m-%d %H:%M:%S")
 
-newDates$week <- as.POSIXct(newDates$newDates, format="%U")
+train_dates$Dates <- as.POSIXlt(train_dates$Dates)    # convert to 'POSIX list type'
+train_dates$monthDay <- train_dates$Dates$mday
+train_dates$hour <- train_dates$Dates$hour
+train_dates$min <- train_dates$Dates$min
+train_dates$mon <- train_dates$Dates$mon
+train_dates$year <- train_dates$Dates$year
+train_dates$wday <- train_dates$Dates$wday
+train_dates$yday <- train_dates$Dates$yday
+train_dates$week <- train_dates$Dates$yday / 7
+train_dates$week <- as.integer(train_dates$week)
+
+train <- cbind(train,train_dates)
+colnames(train)
+
+
+train[8] <- NULL
+
+
+write.csv(train,file = "train_dates.csv",row.names = FALSE,quote = F)
+
+
+test_dates <- test[2]
+#?strptime
+test_dates$Dates <- as.character(test_dates$Dates)
+test_dates$Dates <- as.POSIXct(test_dates$Dates, format="%Y-%m-%d %H:%M:%S")
+
+test_dates$Dates <- as.POSIXlt(test_dates$Dates)    # convert to 'POSIX list type'
+test_dates$monthDay <- test_dates$Dates$mday
+test_dates$hour <- test_dates$Dates$hour
+test_dates$min <- test_dates$Dates$min
+test_dates$mon <- test_dates$Dates$mon
+test_dates$year <- test_dates$Dates$year
+test_dates$wday <- test_dates$Dates$wday
+test_dates$yday <- test_dates$Dates$yday
+test_dates$week <- test_dates$Dates$yday / 7
+test_dates$week <- as.integer(test_dates$week)
+
+test_dates$Dates <- NULL
+
+test <- cbind(test,test_dates)
+
+write.csv(test,file = "test_dates.csv",row.names = FALSE,quote = F)
+
+
 
 train_adress <- read.csv("/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/train_adress.csv")
 
 test_adress <- read.csv("/home/rodolfo/Projetos/Kaggle/San-Francisco-Crime-Classification/test_adress.csv")
+```
+
+rf5020datenum
+
+```{r}
+
+rf5020date <- read.csv("~/rf5020date")
+
+colnames(rf5020date)  <- c("Id",levels(train$Category))
+rf5020date$Id <- test$Id
+
+write.csv(rf5020date,file = "rf5020date.csv",row.names = FALSE,quote = F)
+```
+
+rf5020datesenum
+
+
+```{r}
+
+rf5020datesenum <- read.csv("~/rf5020datesenum")
+
+colnames(rf5020datesenum)  <- c("Id",levels(train$Category))
+rf5020datesenum$Id <- test$Id
+
+write.csv(rf5020datesenum,file = "rf5020datesenum.csv",row.names = FALSE,quote = F)
+```
+
+rf5020someenums
+
+
+```{r}
+
+rf5020someenum <- read.csv("~/rf5020someenum")
+
+colnames(rf5020someenum)  <- c("Id",levels(train$Category))
+rf5020someenum$Id <- test$Id
+
+write.csv(rf5020someenum,file = "rf5020someenum.csv",row.names = FALSE,quote = F)
+```
+
+rf7520someenums
+
+
+```{r}
+train <- read.csv("/home/viana/Projetos/Kaggle/San-Francisco-Crime-Classification/train.csv")
+
+rf7520dates <- read.csv("~/rf7520dates")
+
+colnames(rf7520dates)  <- c("Id",levels(train$Category))
+rf7520dates$Id <- test$Id
+
+write.csv(rf7520dates,file = "rf7520dates.csv",row.names = FALSE,quote = F)
+```
+
+rf7520add
+
+```{r}
+train <- read.csv("/home/viana/Projetos/Kaggle/San-Francisco-Crime-Classification/train.csv")
+test <- read.csv("/home/viana/Projetos/Kaggle/San-Francisco-Crime-Classification/test.csv")
+
+rf7520add <- read.csv("~/rf7520add")
+
+colnames(rf7520add)  <- c("Id",levels(train$Category))
+rf7520add$Id <- test$Id
+
+write.csv(rf7520add,file = "rf7520add.csv",row.names = FALSE,quote = F)
+rm(list = ls())
 ```

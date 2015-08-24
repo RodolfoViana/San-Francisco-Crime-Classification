@@ -12,7 +12,7 @@ output: html_document
 ## Load library and initialize h2o
 library(h2o)
 print("Launching H2O and initializing connection object...")
-conn <- h2o.init(nthreads = -1)
+conn <- h2o.init(nthreads = -1, Xmx="4g")
 #h2o.init(Xmx="10g")
 
 ## Find and import data into H2O
@@ -26,9 +26,9 @@ parseTime <- Sys.time() - start
 print(paste("Took", round(parseTime, digits = 2), "seconds to parse", 
             nrow(data), "rows and", ncol(data), "columns."))
 
-split_fit_predict <- function(data) {
+
 # Splits data in prostate data frame with a ratio of 0.75
-data.split <- h2o.splitFrame(data = data , ratios = 0.75)
+data.split <- h2o.splitFrame(data = data , ratios = 0.80)
 # Creates training set from 1st data set in split
 data.train <- data.split[[1]] 
 # Creates testing set from 2st data set in split
@@ -40,77 +40,50 @@ print(paste("Training data has", ncol(data.train), "columns and", nrow(data.trai
 
 
 myY <- "Category"
-myX <- setdiff(names(data.train), myY)
+myX <- setdiff(names(data), myY)
 
+start <- Sys.time()
   # Run GBM
   gbm <- h2o.gbm(x = myX, build_tree_one_node = T, 
                y = myY,
-               training_frame    = data.train,
-               validation_frame  = data.test,
-               ntrees            = 500,
+               training_frame    = data,
+               ntrees            = 131,
                max_depth         = 6,
                learn_rate        = 0.1)
+
+# Score on holdout set & report
+  train_r2_gbm <- h2o.r2(gbm)
+  
+## Find and import data test into H2O
+path_test <- "/home/viana/test_dates.csv"
+data_test <- h2o.importFile(path = path_test, destination_frame = "test.hex")
+
+print("Exporting")
+
+gbm.fit = h2o.predict(object = gbm, newdata = data_test)
+h2o.exportFile(gbm.fit, path = "/home/viana/gbm131-6-total")
+
+print("done1")
 
   # Run DRF
   drf <- h2o.randomForest(x = myX,
                         y = myY,
-                        training_frame    = data.train,
-                        validation_frame  = data.test,
-                        ntrees            = 250,
+                        training_frame    = data,
+                        ntrees            = 77,
                         max_depth         = 30)
 
-  # Run GLM
-  glm <- h2o.glm(x = myX,
-               y = myY,
-               training_frame    = data.train,
-               validation_frame  = data.test,
-               lambda            = 1e-5,
-               family            = "poisson")
-
   
-# Score on holdout set & report
-  train_r2_gbm <- h2o.r2(gbm)
-  test_r2_gbm  <- h2o.r2(gbm, valid = TRUE)
-  print(paste0("GBM R2 TRAIN = ", train_r2_gbm, ", R2 TEST = ", test_r2_gbm))
+
 
   train_r2_drf <- h2o.r2(drf)
-  test_r2_drf  <- h2o.r2(drf, valid = TRUE)
-  print(paste0("DRF R2 TRAIN = ", train_r2_drf, ", R2 TEST = ", test_r2_drf))
-
-  train_r2_glm <- h2o.r2(glm)
-  test_r2_glm  <- h2o.r2(glm, valid = TRUE)
-  print(paste0("GLM R2 TRAIN = ", train_r2_glm, ", R2 TEST = ", test_r2_glm))
-}
 
 ## Run through model build
-start <- Sys.time()
-split_fit_predict(data)
 modelBuild <- Sys.time() - start
 print(paste("Took", round(modelBuild, digits = 2), units(modelBuild),"to build a gbm, a random forest, and a glm model, score and report r2 values."))
 
 
-  # Run GLM
-  glm <- h2o.glm(x = myX,
-               y = myY,
-               training_frame    = data.train,
-               validation_frame  = data.test,
-               lambda            = 1e-5,
-               family            = "poisson")
-
-## Find and import data test into H2O
-path_test <- "/home/viana/test_dates.csv"
-data_train <- h2o.importFile(path = path_input, destination_frame = "train.hex")
-
-print("Exporting")
-
-gbm.fit = h2o.predict(object = gbm, newdata = data_train)
-h2o.exportFile(gbm.fit, path = "/home/viana/gbm500-6")
-
-drf.fit = h2o.predict(object = drf, newdata = data_train)
-h2o.exportFile(drf.fit, path = "/home/viana/drf250-30")
-
-glm.fit = h2o.predict(object = glm, newdata = data_train)
-h2o.exportFile(glm.fit, path = "/home/viana/glm1e5")
+drf.fit = h2o.predict(object = drf, newdata = data_test)
+h2o.exportFile(drf.fit, path = "/home/viana/drf77-30-total")
 
 print("Done")
 ```
