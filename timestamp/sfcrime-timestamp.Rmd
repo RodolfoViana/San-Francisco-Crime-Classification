@@ -1,0 +1,317 @@
+---
+title: "sfcrime-timestamp"
+author: "Antonio Marques Jr."
+date: "9 September 2015"
+output: html_document
+---
+
+#San Francisco Crimes Classification - Timestamp analysis
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr, quietly=TRUE)
+library(ggplot2, quietly = TRUE)
+sfcrime.timestamp <- read.csv("~/Documents/kaggle/sfcrime/sfcrime-dates/sfcrime-timestamp.csv")
+sfcrime.timestamp <- sfcrime.timestamp %>% select(-seconds)
+sfcrime.timestamp <- sfcrime.timestamp %>% filter(year != 2015)
+summary(sfcrime.timestamp)
+```
+
+###YEAR
+
+```{r}
+summary(sfcrime.timestamp$year)
+unique(sfcrime.timestamp$year)
+```
+
+
+```{r}
+ggplot(sfcrime.timestamp, aes(x=factor(year))) + geom_histogram() + theme_bw()
+```
+
+
+###2003
+```{r}
+year_2003 <- sfcrime.timestamp %>% filter(year == 2003)
+nrow(year_2003)
+ggplot(year_2003, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2004
+```{r}
+year_2004 <- sfcrime.timestamp %>% filter(year == 2004)
+nrow(year_2004)
+ggplot(year_2004, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2005
+```{r}
+year_2005 <- sfcrime.timestamp %>% filter(year == 2005)
+nrow(year_2005)
+ggplot(year_2005, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2006
+```{r}
+year_2006 <- sfcrime.timestamp %>% filter(year == 2006)
+nrow(year_2006)
+ggplot(year_2006, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2007
+```{r}
+year_2007 <- sfcrime.timestamp %>% filter(year == 2007)
+nrow(year_2007)
+ggplot(year_2007, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2008
+```{r}
+year_2008 <- sfcrime.timestamp %>% filter(year == 2008)
+nrow(year_2008)
+ggplot(year_2008, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2009
+```{r}
+year_2009 <- sfcrime.timestamp %>% filter(year == 2009)
+nrow(year_2009)
+ggplot(year_2009, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2010
+```{r}
+year_2010 <- sfcrime.timestamp %>% filter(year == 2010)
+nrow(year_2010)
+ggplot(year_2010, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+
+###2011
+```{r}
+year_2011 <- sfcrime.timestamp %>% filter(year == 2011)
+nrow(year_2011)
+ggplot(year_2011, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2012
+```{r}
+year_2012 <- sfcrime.timestamp %>% filter(year == 2012)
+nrow(year_2012)
+ggplot(year_2012, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2013
+```{r}
+year_2013 <- sfcrime.timestamp %>% filter(year == 2013)
+nrow(year_2013)
+ggplot(year_2013, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+###2014
+```{r}
+year_2014 <- sfcrime.timestamp %>% filter(year == 2014)
+nrow(year_2014)
+ggplot(year_2014, aes(x=factor(month))) + geom_histogram() + theme_bw()
+```
+
+
+###Seasons: Spring, Summer, Fall, Winter
+
+```{r}
+sfcrime.timestamp$season <- ifelse((sfcrime.timestamp$month > 2) & (sfcrime.timestamp$month < 6),
+                                   "spring",
+                            ifelse((sfcrime.timestamp$month > 5) & (sfcrime.timestamp$month < 9),
+                                   "summer",
+                            ifelse((sfcrime.timestamp$month > 8) & (sfcrime.timestamp$month < 12),
+                                   "fall", "winter")))
+```
+
+
+###Number of Crimes by Season
+
+```{r}
+ggplot(sfcrime.timestamp, aes(x=season)) + geom_histogram() + theme_bw()
+```
+
+```{r}
+season_crimes_count <- sfcrime.timestamp %>% group_by(season) %>% summarise(count=n())
+```
+
+
+###Crimes in Spring
+```{r}
+crimes_spring <- sfcrime.timestamp %>% filter(season == "spring")
+ggplot(crimes_spring, aes(x=factor(month))) + geom_histogram() + theme_bw()
+crimes_spring_count <- crimes_spring %>% group_by(month) %>% summarise(count = n())
+```
+
+###Crimes in Fall
+
+```{r}
+crimes_fall <- sfcrime.timestamp %>% filter(season == "fall")
+ggplot(crimes_fall, aes(x=factor(month))) + geom_histogram() + theme_bw()
+crimes_fall_count <- crimes_fall %>% group_by(month) %>% summarise(count = n())
+```
+
+##Safer Seasons
+
+###Crimes in Summer
+
+```{r}
+crimes_summer <- sfcrime.timestamp %>% filter(season == "summer")
+ggplot(crimes_summer, aes(x=factor(month))) + geom_histogram() + theme_bw()
+crimes_summer_count <- crimes_summer %>% group_by(month) %>% summarise(count = n())
+
+```
+
+###Crimes in Winter 
+```{r}
+crimes_winter <- sfcrime.timestamp %>% filter(season == "winter")
+ggplot(crimes_winter, aes(x=factor(month))) + geom_histogram() + theme_bw()
+crimes_winter_count <- crimes_winter %>% group_by(month) %>% summarise(count = n())
+```
+
+
+###Crimes by month - Count
+
+```{r}
+crimes_by_month_count <- rbind(crimes_winter_count, crimes_spring_count, crimes_summer_count, crimes_fall_count)
+
+crimes_by_month_count <- crimes_by_month_count %>% arrange(-count)
+
+```
+
+
+
+###is_winter variable
+```{r}
+sfcrime.timestamp$is_winter <- ifelse(sfcrime.timestamp$season == "winter", TRUE, FALSE)
+```
+
+###fall_ending
+```{r}
+sfcrime.timestamp$fall_ending <- ifelse(sfcrime.timestamp$month == 10, TRUE, FALSE)
+
+```
+
+###spring_ending
+```{r}
+sfcrime.timestamp$spring_ending <- ifelse(sfcrime.timestamp$month == 5, TRUE, FALSE)
+```
+
+
+#Days in the months
+
+###January
+```{r}
+january <- sfcrime.timestamp %>% filter(month == 1)
+ggplot(january, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###Febryary
+```{r}
+february <- sfcrime.timestamp %>% filter(month == 2)
+ggplot(february, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###March
+```{r}
+march <- sfcrime.timestamp %>% filter(month == 3)
+ggplot(march, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###April
+```{r}
+april <- sfcrime.timestamp %>% filter(month == 4)
+ggplot(april, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###May
+```{r}
+may <- sfcrime.timestamp %>% filter(month == 5)
+ggplot(may, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###June
+```{r}
+june <- sfcrime.timestamp %>% filter(month == 6)
+ggplot(june, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###July
+```{r}
+july <- sfcrime.timestamp %>% filter(month == 7)
+ggplot(july, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###August
+```{r}
+august <- sfcrime.timestamp %>% filter(month == 8)
+ggplot(august, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###September
+```{r}
+september <- sfcrime.timestamp %>% filter(month == 9)
+ggplot(september, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###October
+```{r}
+october <- sfcrime.timestamp %>% filter(month == 10)
+ggplot(october, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###November
+```{r}
+november <- sfcrime.timestamp %>% filter(month == 11)
+ggplot(november, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###December
+```{r}
+december <- sfcrime.timestamp %>% filter(month == 12)
+ggplot(december, aes(x=factor(day))) + geom_histogram() + theme_bw()
+```
+
+###Days in month
+```{r}
+days <- sfcrime.timestamp %>% group_by(day) %>% summarise(count=n())
+
+ggplot(days, aes(x=factor(day), y=count, fill=count)) + geom_bar(stat="identity") + theme_bw()
+
+```
+
+```{r}
+
+sfcrime.timestamp$is_thirty_first <- ifelse(sfcrime.timestamp$day == 31, TRUE, FALSE)
+sfcrime.timestamp$is_first_of_month <- ifelse(sfcrime.timestamp$day == 1, TRUE, FALSE)
+```
+
+
+###Hours
+
+```{r}
+hours <- sfcrime.timestamp %>% group_by(hour) %>% summarise(count=n()) %>% arrange(-count)
+ggplot(hours, aes(x=factor(hour), y=count, fill=count)) + geom_histogram(stat="identity") + theme_bw()
+mean(hours$count)
+
+sfcrime.timestamp$safe_hour <- ifelse( sfcrime.timestamp$hour >= 1 & sfcrime.timestamp$hour <= 7, TRUE, FALSE)
+
+```
+
+###MINUTES
+```{r}
+minutes <- sfcrime.timestamp %>% group_by(minutes) %>% summarise(count=n()) %>% arrange(-count)
+ggplot(minutes, aes(x=factor(minutes), y=count, fill=count)) + geom_histogram(stat="identity") + theme_bw() 
+sfcrime.timestamp$minutes_of_crime <- ifelse(sfcrime.timestamp$minutes == 0 | sfcrime.timestamp$minutes == 30, TRUE, FALSE)
+```
+
+
+```{r}
+str(sfcrime.timestamp)
+
+write.table(sfcrime.timestamp, "sfcrime-timestamp-2.csv", sep=",", quote = FALSE)
+
+
+```
